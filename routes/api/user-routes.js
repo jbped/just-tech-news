@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { verify } = require("crypto");
 const { User } = require("../../models");
 
 // GET ALL USERS
@@ -47,6 +48,27 @@ router.post("/", (req, res) => {
         res.status(500).json(err);
     });
 });
+
+// LOGIN VERIFICATION
+router.post("/login", (req, res) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    })
+    .then(dbUserData => {
+        if (!dbUserData) {
+            res.status(400).json({ message: "An account with the provided email was not found."});
+            return;
+        }
+        const verifyPassword = dbUserData.checkPassword(req.body.password);
+        if (!verifyPassword){
+            res.status(400).json({ message: "Incorrect password!" });
+            return;
+        }
+        res.json({ user: dbUserData, message: "You are now logged in!"})
+    })
+})
 
 // UPDATE USER INFORMATION
 router.put("/:id", (req, res) => {
