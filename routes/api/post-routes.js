@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { Post, User, Vote } = require("../../models");
+const { Post, User, Vote, Comment } = require("../../models");
 const sequelize = require("../../config/connection");
 
 // GET ALL POSTS
@@ -17,6 +17,14 @@ router.get("/", (req, res) => {
             {
                 model: User,
                 attributes: ["username"]
+            },
+            {
+                model: Comment,
+                attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
+                include: {
+                    model: User,
+                    attributes: ["username"]
+                }
             }
         ]
     })
@@ -24,7 +32,7 @@ router.get("/", (req, res) => {
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
-    })
+    });
 });
 
 // GET SINGLE POST BY POST ID
@@ -44,6 +52,14 @@ router.get("/:id", (req, res) => {
             {
                 model: User, 
                 attributes: ["username"]
+            },
+            {
+                model: Comment,
+                attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
+                include: {
+                    model: User,
+                    attributes: ["username"]
+                }
             }
         ]
     })
@@ -57,7 +73,7 @@ router.get("/:id", (req, res) => {
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
-    })
+    });
 });
 
 // CREATE POST
@@ -71,7 +87,7 @@ router.post("/", (req, res) => {
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
-    })
+    });
 });
 
 // UPDATE POST TITLE
@@ -96,7 +112,7 @@ router.post("/:id", (req,res) => {
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
-    })
+    });
 });
 
 router.delete("/:id", (req, res) => {
@@ -117,7 +133,7 @@ router.delete("/:id", (req, res) => {
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
-    })
+    });
 });
 
 router.put("/upvote", (req, res) => {

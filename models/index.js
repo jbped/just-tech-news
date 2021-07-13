@@ -1,20 +1,33 @@
 const User = require("./User");
 const Post = require("./Post");
-const Vote = require("./Vote")
+const Vote = require("./Vote");
+const Comment = require("./Comments");
 
-User.hasMany(Post, {
-    foreignKey: "user_id"
-});
-
+// Many Posts have User as 
 User.belongsToMany(Post, {
     through: Vote,
     as: "voted_posts",
     foreignKey: "user_id"
 });
 
+// CONSTRAINTS User to Vote on vote.user_id FOREIGN KEYS
+// One user can have many votes
 User.hasMany(Vote, {
     foreignKey: "user_id"
 });
+
+// CONSTRAINTS User to Comment on comment.user_id FOREIGN KEYS
+// One user can have many comments
+User.hasMany(Comment,  {
+    foreignKey: "user_id"
+});
+
+// CONSTRAINTS User to Post on post.user_id FOREIGN KEYS
+// One user can have many posts
+User.hasMany(Post, {
+    foreignKey: "user_id"
+});
+
 
 // CONSTRAINT
 Post.belongsTo(User, {
@@ -31,6 +44,10 @@ Post.hasMany(Vote, {
     foreignKey: "post_id"
 });
 
+Post.hasMany(Comment, {
+    foreignKey: "post_id"
+});
+
 Vote.belongsTo(User, {
     foreignKey:"user_id"
 });
@@ -39,5 +56,13 @@ Vote.belongsTo(Post, {
     foreignKey: "post_id"
 });
 
+Comment.belongsTo(User, {
+    foreignKey: 'user_id'
+  });
+  
+  Comment.belongsTo(Post, {
+    foreignKey: 'post_id'
+  });
 
-module.exports = { User, Post, Vote }
+
+module.exports = { User, Post, Vote, Comment }
