@@ -65,7 +65,7 @@ router.get("/:id", (req, res) => {
     })
     .then(dbPostData => {
         if(!dbPostData) {
-            res.status(404).json({ message: "No posts were found for the provided user ID"});
+            res.status(404).json({ message: "No posts were found for the provided ID"});
             return;
         }
         res.json(dbPostData);
@@ -137,12 +137,14 @@ router.delete("/:id", (req, res) => {
 });
 
 router.put("/upvote", (req, res) => {
-    Post.upvote(req.body, { Vote })
-    .then(dbPostData => res.json(dbPostData))
-    .catch(err => {
-        console.log(err);
-        res.status(500).json(err)
-    });
+    if (req.session) {
+        Post.upvote({ ...req.body, user_id: req.session.user_id}, { Vote, Comment, User })
+        .then(dbPostData => res.json(dbPostData))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err)
+        });
+    }
 });
 
 
